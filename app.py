@@ -61,6 +61,12 @@ class AgreementInput(BaseModel):
     important_info: str
     extra_info: str
 
+#  ADD THIS SECTION -  Root route
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to PactForge!"}
+# END OF ADDED SECTION
+
 @app.post("/generate")
 async def generate_agreement(data: AgreementInput):
     user_input = data.important_info + "\n" + data.extra_info
