@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>PactForge - Legal Document Generator</title>
@@ -48,126 +49,125 @@
 
     #inputArea {
       padding: 15px;
-      background-color: #1c1c1c;
+      background-color: #1f1f1f;
       display: flex;
-      gap: 10px;
+      align-items: center;
     }
 
-    input, textarea {
+    #inputField {
       flex: 1;
       padding: 10px;
-      background-color: #2c2c2c;
-      border: 1px solid #555;
-      color: white;
+      border: none;
       border-radius: 8px;
+      background-color: #333;
+      color: #fff;
+      margin-right: 10px;
     }
 
-    button {
-      background-color: #0a84ff;
+    #sendButton {
+      padding: 10px 15px;
       border: none;
-      color: white;
-      padding: 10px 16px;
       border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
       cursor: pointer;
     }
 
-    #footer {
-      font-size: 12px;
-      text-align: center;
-      padding: 10px;
-      background-color: #1a1a1a;
-      color: #777;
+    #sendButton:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
+
 <body>
 
-  <div id="chatbox"></div>
+  <div id="chatbox">
+    </div>
 
   <div id="inputArea">
-    <input type="text" id="inputField" placeholder="Type your response..." />
-    <button onclick="handleInput()">Send</button>
+    <input type="text" id="inputField" placeholder="Type here...">
+    <button id="sendButton" onclick="handleInput()">Send</button>
   </div>
 
-  <div id="footer">
-    © 2025 @PactForge. All Rights Reserved.<br>
-    Please note: PactForge can generate text and information, but it may contain errors or inaccuracies. Consult with a legal professional for critical legal advice.
-  </div>
-
-  
   <script>
-  let step = 0;
-  let agreementType = '';
-  let importantInfo = '';
-  let extraInfo = '';
+    const chatbox = document.getElementById('chatbox');
+    const inputField = document.getElementById('inputField');
+    let step = 0;
+    let agreementType;
+    let importantInfo;
+    let extraInfo;
 
-  const chatbox = document.getElementById("chatbox");
-  const inputField = document.getElementById("inputField");
-
-  function appendMessage(sender, message) {
-    const div = document.createElement("div");
-    div.className = "chat " + sender;
-    div.innerText = message;
-    chatbox.appendChild(div);
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
-
-  function handleInput() {
-    const userInput = inputField.value.trim();
-    if (!userInput) return;
-    appendMessage("user", userInput);
-    inputField.value = "";
-
-    setTimeout(() => {
-      switch (step) {
-        case 0:
-          agreementType = userInput.toLowerCase();
-          appendMessage("bot", "Thanks! What are the important details to include?");
-          break;
-        case 1:
-          importantInfo = userInput;
-          appendMessage("bot", "Got it. Any extra context or information you'd like to add?");
-          break;
-        case 2:
-          extraInfo = userInput;
-          appendMessage("bot", "Generating your agreement. Please wait...");
-
-          fetch("https://your-render-backend.onrender.com/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              agreement_type: agreementType,
-              important_info: importantInfo,
-              extra_info: extraInfo
-            })
-          })
-          .then(res => res.json())
-          .then(data => {
-            appendMessage("bot", data.agreement || "Sorry, something went wrong.");
-          })
-          .catch(() => {
-            appendMessage("bot", "An error occurred while generating the agreement.");
-          });
-          break;
-      }
-      step++;
-    }, 600);
-  }
-
-  // Listen for Enter key
-  inputField.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleInput();
+    function appendMessage(sender, message) {
+      const chatDiv = document.createElement('div');
+      chatDiv.classList.add('chat', sender);
+      chatDiv.textContent = message;
+      chatbox.appendChild(chatDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
     }
-  });
 
-  // Initial welcome message
-  window.onload = () => {
-    appendMessage("bot", "Welcome to PactForge! What type of agreement do you need? (e.g., rent, nda, contractor, etc.)");
-  };
-</script>
+    function handleInput() {
+      const userInput = inputField.value.trim();
+      if (!userInput) return;
+
+      appendMessage('user', userInput);
+      inputField.value = '';
+
+      setTimeout(() => {
+        switch (step) {
+          case 0:
+            agreementType = userInput;
+            appendMessage('bot', "Thanks! What are the important details to include?");
+            break;
+          case 1:
+            importantInfo = userInput;
+            appendMessage('bot', "Got it. Any extra context or information you'd like to add?");
+            break;
+          case 2:
+            extraInfo = userInput;
+            appendMessage('bot', "Generating your agreement. Please wait...");
+
+            // **IMPORTANT: Replace with your PythonAnywhere backend URL**
+            const backendUrl = "https://<your-pythonanywhere-username>.pythonanywhere.com/generate";
+
+            fetch(backendUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                agreement_type: agreementType,
+                important_info: importantInfo,
+                extra_info: extraInfo
+              })
+            })
+              .then(res => res.json())
+              .then(data => {
+                appendMessage('bot', data.agreement || "Sorry, something went wrong.");
+              })
+              .catch(() => {
+                appendMessage('bot', "An error occurred while generating the agreement.");
+              });
+            break;
+        }
+        step++;
+      }, 600);
+    }
+
+    // Listen for Enter key
+    inputField.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleInput();
+      }
+    });
+
+    // Initial welcome message
+    window.onload = () => {
+      appendMessage('bot', "Welcome to PactForge! What type of agreement do you need? (e.g., rent, nda, contractor, etc.)");
+    };
+  </script>
 
 
 </body>
+
 </html>
